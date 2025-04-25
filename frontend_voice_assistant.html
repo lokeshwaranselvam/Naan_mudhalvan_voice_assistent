@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #4A90E2;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4A90E2;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            max-width: 80%;
+            word-wrap: break-word;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards;
+        }
+
+        /* Animation for result text */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animation for loading spinner */
+        .loading {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ccc;
+            border-top: 5px solid #4A90E2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <h1>🎙️Prime spark's Voice Assistant Web App</h1>
+    <button onclick="sendCommand()">Click to Speak</button>
+    <div class="loading" id="loading" style="display: none;"></div>
+    <p id="result"></p>
+
+    <script>
+        function sendCommand() {
+            // Show loading animation
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("result").style.opacity = 0;
+            document.getElementById("result").style.transform = "translateY(30px)";
+
+            fetch("/voice-command", { method: "POST" })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading animation
+                document.getElementById("loading").style.display = "none";
+
+                // Update result with animation
+                const resultText = data.command || "Sorry, I didn't catch that.";
+                const resultElement = document.getElementById("result");
+                resultElement.innerText = resultText;
+                resultElement.style.opacity = 1;
+                resultElement.style.transform = "translateY(0)";  // Animate to normal position
+            })
+            .catch(error => {
+                // Hide loading animation in case of error
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("result").innerText = "❌ Something went wrong.";
+                document.getElementById("result").style.opacity = 1;
+                document.getElementById("result").style.transform = "translateY(0)";
+            });
+        }
+    </script>
+</body>
+</html>
